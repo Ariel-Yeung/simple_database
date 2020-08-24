@@ -2,7 +2,7 @@
 Simple Interactive Command Line Database of Pricing Information in Bash
 
 ## Commands:
-  - <b>setdb \<filename\></b>:  set \<filename\> as database if it exists and is readable, if it does not exist, create \<filename\> and set as database
+  - <i>setdb \<filename\></i>:  set \<filename\> as database if it exists and is readable, if it does not exist, create \<filename\> and set as database
   
   - <b>add \<product\> \<price\></b>:  add or update items in database
   
