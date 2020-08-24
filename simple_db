@@ -28,7 +28,7 @@ do
 			then
 	         if [[ -r "$db" ]]
             then
-               echo "Databas set to ${db}."     #db exists and readable
+               echo "Database set to ${db}."     #db exists and readable
 					database=$db
 				else
                echo "File ${db} is not readable."     #db exists but not readable
