@@ -11,95 +11,96 @@ do
 	
 	case "$input1" in
    	quit)												#quit command
-      	exit
-      	;;
+      		exit
+      		;;
 		
-   	setdb*)											#setdb command			
-			db="${input1:6}"
+   	setdb*)												#setdb command			
+		db="${input1:6}"
 
-      	multfile=0
-      	if [[ ! -z $(echo "$db" | grep " ") ]]       #multiple filenames provided, extra argument statement printed    +later
-      	then
-         	db="${db% *}"
-         	multfile=1
-      	fi
+      		multfile=0
+      		if [[ ! -z $(echo "$db" | grep " ") ]]       						#multiple filenames provided
+      		then
+         		db="${db% *}"
+         		multfile=1
+      		fi
 
-	      if [[ -f "$db" ]]
-			then
-	         if [[ -r "$db" ]]
-            then
-               echo "Database set to ${db}."     #db exists and readable
-					database=$db
-				else
-               echo "File ${db} is not readable."     #db exists but not readable
-				fi
-      	else
-         	touch "$db"
-         	echo "File ${db} created. Database set to ${db}."     #db not exist
-      		database=$db
-			fi
-
-      	if [[ $multfile == 1 ]]
-      	then
-         	echo "Extra arguments ignored."           #print statement for multiple filename
-      	fi
-      	;;
-
-		add*)																						#add command
-			if [[ $(echo "$input1" | awk '{ print NF }') == 3 ]]
-			then
-				if [[ ! -z $database ]]														#if database has been set
-				then
-					product=$(echo "$input1" | awk '{ print $2 }')
-					price=$(echo "$input1" | awk '{ print $3 }')
-
-					if [[ -z $(cat $database | grep $product) ]]
-					then
-						echo "$product:$price" >> $database									#if product not present
-						echo "$product:$price has been added to the database."
-					else																				#if product present
-						 cat $database | awk -F":" -v var1="$product" -v var2="$price" '$1~var1{gsub($2,var2)}1' > temp.txt && mv -f temp.txt $database
-						 rm -f temp.txt
-						echo "$product has been updated to $price."
-					fi
-
-				else
-					echo "Database has not been set."
-				fi
+		if [[ -f "$db" ]]
+		then
+	         	if [[ -r "$db" ]]
+            		then
+               			echo "Database set to ${db}."     					#db exists and readable
+				database=$db
 			else
-				echo "Incorrect syntax."
+               			echo "File ${db} is not readable."     					#db exists but not readable
 			fi
-			;;
+      		else
+         		touch "$db"	
+         		echo "File ${db} created. Database set to ${db}."   			  	#db not exist
+      			database=$db
+		fi
 
-		delete*)														#delete command
-			if [[ $(echo "$input1" | awk '{ print NF }') == 2 ]]
+      		if [[ $multfile == 1 ]]
+      		then
+         		echo "Extra arguments ignored."   					        #print statement for multiple filename
+      		fi
+      		;;
+
+	add*)												#add command
+		if [[ $(echo "$input1" | awk '{ print NF }') == 3 ]]
+		then
+			if [[ ! -z $database ]]								#if database has been set
 			then
-				delprod=$(echo "$input1" | awk '{ print $2 }')
-				if [[ ! -z $database ]]
+				product=$(echo "$input1" | awk '{ print $2 }')
+				price=$(echo "$input1" | awk '{ print $3 }')
+
+				if [[ -z $(cat $database | grep $product) ]]
 				then
-					if [[ ! -z $(cat $database | grep $delprod) ]]
-					then
-						sed -i "/$delprod/d" $database								#database set and product found
-						echo "$delprod has been deleted from $database"
-					else
-						echo "$delprod does not exist in $database"				#database set and product not found
-					fi
-				else
-					echo "Database has not been set."								#database not set
-				fi
-			else
-				echo "Incorrect syntax."
-			fi
-			;;
+					echo "$product:$price" >> $database				#if product not present
+					echo "$product:$price has been added to the database."
 
-		printdb)
-			if [[ ! -z $database ]]
-			then
-				cat $database
+				else									#if product present
+					cat $database | awk -F":" -v var1="$product" -v var2="$price" '$1~var1{gsub($2,var2)}1' > temp.txt && mv -f temp.txt $database
+					rm -f temp.txt
+					echo "$product has been updated to $price."
+				fi
+
 			else
 				echo "Database has not been set."
 			fi
-			;;
+		else
+			echo "Incorrect syntax."
+		fi
+		;;
+
+	delete*)											#delete command
+		if [[ $(echo "$input1" | awk '{ print NF }') == 2 ]]
+		then
+			delprod=$(echo "$input1" | awk '{ print $2 }')
+			if [[ ! -z $database ]]
+			then
+				if [[ ! -z $(cat $database | grep $delprod) ]]
+				then
+					sed -i "/$delprod/d" $database					#database set and product found
+					echo "$delprod has been deleted from $database"
+				else
+					echo "$delprod does not exist in $database"			#database set and product not found
+				fi
+			else
+				echo "Database has not been set."					#database not set
+			fi
+		else
+			echo "Incorrect syntax."
+		fi
+		;;
+
+	printdb)
+		if [[ ! -z $database ]]
+		then
+			cat $database
+		else
+			echo "Database has not been set."
+		fi
+		;;
 
    	*)												#Other commands
       	echo "Unrecognized command."
